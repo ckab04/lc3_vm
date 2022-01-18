@@ -1,4 +1,3 @@
-use std::intrinsics::unreachable;
 
 pub enum OpCode{
     OpBr = 0,  // Branch

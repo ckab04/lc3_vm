@@ -70,14 +70,13 @@ fn main() {
             OpCode::OpRes => println!("Res"),
             OpCode::OpRti => println!("Rti"),
             _ => println!("Bad Opcode"),
-
-
         }
     }
 }
 
-fn mem_read(value : u16) -> u16{
-    0
+fn mem_read(mut value :  u16) -> u16{
+    value += 1 ;
+    value
 }
 
 fn read_image(file : &String) -> bool{

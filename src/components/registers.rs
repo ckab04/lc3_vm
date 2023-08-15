@@ -33,7 +33,7 @@ impl From<Registers> for i32{
     }
 }
 
-fn get_registers()->Vec<Registers>{
+pub fn get_registers()->Vec<Registers>{
 
     vec![]
 }

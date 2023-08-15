@@ -1,4 +1,4 @@
-mod memory;
+pub mod memory;
 pub mod registers;
 mod instruction_set;
-mod condition_flags;
+pub mod condition_flags;

@@ -6,3 +6,7 @@ fn memory<'a>() -> &'a [i32]{
     vm_memory
 
 }
+
+pub(crate) fn mem_read(address : i32){
+
+}

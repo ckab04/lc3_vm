@@ -1,5 +1,6 @@
 
 #[derive(Debug)]
+#[allow(non_camel_case_types)]
 pub enum Registers{
     R_R0,
     R_R1,
@@ -30,4 +31,9 @@ impl From<Registers> for i32{
            Registers::R_COUNT => 10,
        }
     }
+}
+
+fn get_registers()->Vec<Registers>{
+
+    vec![]
 }

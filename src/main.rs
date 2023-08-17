@@ -1,3 +1,5 @@
+use crate::components::instruction_set::Opcodes;
+use crate::components::operations::op_add;
 use crate::components::registers::{get_registers, Registers};
 mod components;
 
@@ -11,7 +13,6 @@ fn main() {
     println!("Value of s = {}", s);
 
 }
-
 
 fn run(){
 
@@ -36,10 +37,12 @@ fn run(){
 
 
         match op{
-
+            i32::from(Opcodes::OP_ADD) => op_add(instr, &mut reg),
         }
 
     }
 }
+
+
 
 

@@ -7,6 +7,6 @@ fn memory<'a>() -> &'a [i32]{
 
 }
 
-pub(crate) fn mem_read(address : i32){
-
+pub(crate) fn mem_read(address : i32) -> i32{
+0
 }

@@ -2,7 +2,7 @@
 
 #[derive(Debug)]
 #[allow(non_camel_case_types)]
-enum Opcodes{
+pub enum Opcodes{
     OP_BR , /* branch */
     OP_ADD,    /* add  */
     OP_LD,     /* load */

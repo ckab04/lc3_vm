@@ -21,7 +21,7 @@ pub enum Opcodes{
     OP_TRAP    /* execute trap */
 }
 
-impl From<Opcodes> for i32 {
+impl From<Opcodes> for u16 {
     fn from(value: Opcodes) -> Self {
         match value{
             Opcodes::OP_BR=> 0,

@@ -8,7 +8,7 @@ fn main() {
 
     let val = Registers::R_R7;
     //let i = Registers::from(val);
-    let s: i32 = val.into();
+    let s: u16 = val.into();
     //println!("Value obtained {:?}", i);
     println!("Value of s = {}", s);
 
@@ -19,25 +19,28 @@ fn run(){
     let mut reg = get_registers();
 
     /* since exactly one condition flag should be set at any given time, set the Z flag */
-    reg[Registers::R_COND] = components::condition_flags::ConditionFlags::FL_ZRO;
+    let rcond = u16::from(Registers::R_COND) as usize;
+    let val = components::condition_flags::ConditionFlags::FL_ZRO as u16;
+    reg[rcond] = val;
 
 
     // Set the PC to starting position
     // 0x3000 is the default
     let pc_start = 0x3000;
-
-    reg[Registers::R_PC] = pc_start;
+    let rpc = u16::from(Registers::R_PC) as usize;
+    reg[rpc] = pc_start;
     let running = 1;
 
     while running == 1{
+        let m = reg[rpc];
 
         // FETCH
-        let instr = components::memory::mem_read(reg[Registers::R_PC].into());
+        let instr = components::memory::mem_read(m);
         let mut op = instr >> 12;
 
 
-        match op{
-            i32::from(Opcodes::OP_ADD) => op_add(instr, &mut reg),
+       if op == u16::from(Opcodes::OP_ADD){
+            let v = op_add(instr,  &mut reg);
         }
 
     }

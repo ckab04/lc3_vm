@@ -3,13 +3,15 @@ use crate::components::registers::Registers;
 
 
 // ADD instruction
-pub fn op_add(instr : i32, mut reg: &Vec<Registers>) -> i32{
+pub fn op_add(instr : u16, mut reg: &mut Vec<u16>) -> u16{
 
     // Destination Register (DR)
-    let r0 = (instr >> 9) & 0x7;
+    let r0 = ((instr >> 9) & 0x7);
+    let r0 = usize::try_from(r0).unwrap();
 
     // first operand  (SR1)
-    let r1 = (instr >> 6) & 0x7;
+    let _r1 = ((instr >> 6) & 0x7 );
+    let r1 = usize::try_from(r0).unwrap();
 
     // whether we are in immediate mode
     let imm_flag = (instr >> 5) & 0x1;
@@ -20,33 +22,39 @@ pub fn op_add(instr : i32, mut reg: &Vec<Registers>) -> i32{
 
     }
     else{
-        let r2 = instr & 0x7;
+        let r2 = (instr & 0x7) as usize;
         reg[r0] = reg[r1] + reg[r2];
     }
 
-    update_flags(r0);
+    update_flags(r0 as u16, reg);
     0
 }
 
-fn sign_extend(mut x: i32, bit_count : i32) -> i32{
+fn sign_extend(mut x: u16, bit_count : u16) -> u16{
+    let sign = x >> (bit_count - 1) & 1;
 
-    if (x >> (bit_count - 1))  & 1 {
+    if  sign > 0 {
 
         x |= (0xFFF >> bit_count);
     }
     x
 }
 
-fn update_flags(r : i32, mut reg: &Vec<Registers>){
+fn update_flags(r : u16, mut reg: &mut Vec<u16>){
 
-    if reg[r] == 0{
-        reg[Registers::R_COND] = ConditionFlags::FL_ZRO;
+    let rcond = u16::from(Registers::R_COND) as usize;
+    let cond_flag_zero =i16::from(ConditionFlags::FL_ZRO);
+    let cond_flag_neg = i16::from(ConditionFlags::FL_NEG);
+    let cond_flag_pos = i16::from(ConditionFlags::FL_POS);
+
+    if reg[r as usize] == 0{
+        reg[rcond] = cond_flag_zero as u16;
     }
-    else if(reg[r] >> 15) {
-        reg[Registers::R_COND] = ConditionFlags::FL_NEG;
+    else if reg[r as usize] >> 15 < 0 {
+        reg[rcond] = cond_flag_neg as u16;
     }
     else{
-        reg[Registers::R_COND] = ConditionFlags::FL_POS;
+        reg[rcond] = cond_flag_pos as u16;
     }
 
 }

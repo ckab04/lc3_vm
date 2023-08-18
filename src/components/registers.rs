@@ -1,5 +1,5 @@
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 #[allow(non_camel_case_types)]
 pub enum Registers{
     R_R0,
@@ -15,7 +15,7 @@ pub enum Registers{
     R_COUNT
 }
 
-impl From<Registers> for i32{
+impl From<Registers> for u16{
     fn from(value: Registers) -> Self {
        match value{
            Registers::R_R0 => 0,
@@ -33,7 +33,7 @@ impl From<Registers> for i32{
     }
 }
 
-pub fn get_registers()->Vec<Registers>{
+pub fn get_registers()->Vec<u16>{
 
     vec![]
 }

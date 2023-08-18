@@ -1,12 +1,12 @@
 
 
-fn memory<'a>() -> &'a [i32]{
+fn memory<'a>() -> &'a [u16]{
     const MEMORY_MAX: usize = 1 << 16;
-    let vm_memory : &[i32] = &[];
+    let vm_memory : &[u16] = &[];
     vm_memory
 
 }
 
-pub(crate) fn mem_read(address : i32) -> i32{
+pub(crate) fn mem_read(address : u16) -> u16{
 0
 }

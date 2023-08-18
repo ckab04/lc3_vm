@@ -38,9 +38,13 @@ fn run(){
         let instr = components::memory::mem_read(m);
         let mut op = instr >> 12;
 
+        // Using if statement because match does not support function call
 
        if op == u16::from(Opcodes::OP_ADD){
-            let v = op_add(instr,  &mut reg);
+             op_add(instr,  &mut reg);
+        }
+        else if op == u16::from(Opcodes::OP_AND){
+                op_add(instr, &mut reg);
         }
 
     }

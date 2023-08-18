@@ -3,7 +3,7 @@ use crate::components::registers::Registers;
 
 
 // ADD instruction
-pub fn op_add(instr : u16, mut reg: &mut Vec<u16>) -> u16{
+pub fn op_add(instr : u16, mut reg: &mut Vec<u16>){
 
     // Destination Register (DR)
     let r0 = ((instr >> 9) & 0x7);
@@ -27,7 +27,29 @@ pub fn op_add(instr : u16, mut reg: &mut Vec<u16>) -> u16{
     }
 
     update_flags(r0 as u16, reg);
-    0
+
+}
+
+fn op_and(instr : u16, mut reg: &mut Vec<u16>){
+    // Destination Register (DR)
+    let r0 = ((instr >> 9) & 0x7) as usize;
+    //let r0 = usize::try_from(r0).unwrap();
+
+    // first operand  (SR1)
+    let r1 = ((instr >> 6) & 0x7 ) as usize;
+    //let r1 = usize::try_from(r0).unwrap();
+
+    // whether we are in immediate mode
+    let imm_flag = (instr >> 5) & 0x1;
+    if imm_flag > 0{
+      let imm5 = sign_extend(instr >> 0x1F, 5);
+        reg[r0] = reg[r1] & imm5;
+    }
+    else {
+        let r2 = (instr & 0x7) as usize;
+        reg[r0] = reg[r1] + reg[r2];
+    }
+    update_flags(r0 as u16, reg);
 }
 
 fn sign_extend(mut x: u16, bit_count : u16) -> u16{

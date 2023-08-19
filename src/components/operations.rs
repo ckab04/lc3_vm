@@ -1,5 +1,6 @@
+use crate::components::common_op::register_0_pc_offset;
 use crate::components::condition_flags::ConditionFlags;
-use crate::components::memory::mem_read;
+use crate::components::memory::{mem_read, mem_write};
 use crate::components::registers::Registers;
 
 
@@ -145,7 +146,41 @@ fn op_load_effective_address(instr : u16, mut reg: &mut Vec<u16>){
     update_flags(r0 as u16, reg);
 }
 
-fn sign_extend(mut x: u16, bit_count : u16) -> u16{
+
+
+// Store
+fn op_store(instr : u16, mut reg: &mut Vec<u16>){
+    let r0 = ((instr >> 9) & 0x7) as usize;
+    let pc_offset = sign_extend(instr & 0x1FF, 9);
+    let rpc = u16::from(Registers::R_PC) as usize;
+    let val_rpc = *reg.get(rpc).unwrap() + pc_offset;
+    let value_in_r0 = *reg.get(r0 as usize).unwrap();
+    mem_write(val_rpc, value_in_r0);
+}
+
+// Store indirect
+
+pub fn store_indirect(instr : u16, mut reg: &mut Vec<u16>){
+
+    let (r0, sum_rpc_pc_offset) = register_0_pc_offset(instr, reg);
+    let value_in_r0 = *reg.get(r0 as usize).unwrap();
+    mem_write(mem_read(sum_rpc_pc_offset), value_in_r0);
+}
+
+// Store register
+
+pub fn op_store_register(instr : u16, mut reg: &mut Vec<u16>){
+    let r0 = ((instr >> 9) & 0x7) as usize;
+    let r1 = ((instr >> 6) & 0x7) as usize;
+
+    let offset = sign_extend(instr & 0x3F, 6);
+    let value_in_r1 = *reg.get(r1).unwrap();
+    let value_in_r0 = *reg.get(r0).unwrap();
+    mem_write(value_in_r1 + offset, value_in_r0);
+
+}
+
+pub (crate) fn sign_extend(mut x: u16, bit_count : u16) -> u16{
     let sign = x >> (bit_count - 1) & 1;
 
     if  sign > 0 {
@@ -155,7 +190,7 @@ fn sign_extend(mut x: u16, bit_count : u16) -> u16{
     x
 }
 
-fn update_flags(r : u16, mut reg: &mut Vec<u16>){
+pub (crate) fn update_flags(r : u16, mut reg: &mut Vec<u16>){
 
     let rcond = u16::from(Registers::R_COND) as usize;
     let cond_flag_zero =i16::from(ConditionFlags::FL_ZRO);

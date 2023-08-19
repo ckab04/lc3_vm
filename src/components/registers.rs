@@ -12,7 +12,8 @@ pub enum Registers{
     R_R7,
     R_PC, /* program counter */
     R_COND,
-    R_COUNT
+    R_COUNT,
+    NOTHING
 }
 
 impl From<Registers> for u16{
@@ -29,7 +30,27 @@ impl From<Registers> for u16{
            Registers::R_PC => 8,
            Registers::R_COND => 9,
            Registers::R_COUNT => 10,
+           _ => 11,
        }
+    }
+}
+
+impl From<u16> for Registers{
+    fn from(value: u16) -> Self {
+        match value {
+            0 => Registers::R_R0,
+            1 =>Registers::R_R1,
+            2 => Registers::R_R2,
+            3 => Registers::R_R3,
+            4 => Registers::R_R4,
+            5 => Registers::R_R5,
+            6 => Registers::R_R6,
+            7 => Registers::R_R7,
+            8 => Registers::R_PC ,
+            9 => Registers::R_COND,
+            10 =>Registers::R_COUNT,
+            _ => Registers::NOTHING,
+        }
     }
 }
 

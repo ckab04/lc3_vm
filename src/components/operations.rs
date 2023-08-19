@@ -52,6 +52,14 @@ fn op_and(instr : u16, mut reg: &mut Vec<u16>){
     update_flags(r0 as u16, reg);
 }
 
+fn op_not(instr : u16, mut reg: &mut Vec<u16>){
+   let r0 = ((instr >> 9) & 0x7) as usize;
+    let r1 = ((instr >> 6) & 0x7) as usize;
+    reg[r0] = !reg[r1];
+    update_flags(r0 as u16, reg);
+
+}
+
 fn sign_extend(mut x: u16, bit_count : u16) -> u16{
     let sign = x >> (bit_count - 1) & 1;
 

@@ -1,4 +1,5 @@
 use crate::components::condition_flags::ConditionFlags;
+use crate::components::memory::mem_read;
 use crate::components::registers::Registers;
 
 
@@ -106,6 +107,16 @@ fn op_jump_register(instr : u16, mut reg: &mut Vec<u16>){
         let r1 = ((instr >> 6) & 0x7) as usize;
         reg[rpc] = reg[r1]; // JSRR
     }
+}
+
+// LOAD
+fn op_load(instr : u16, mut reg: &mut Vec<u16>){
+
+    let r0 = ((instr >> 9) & 0x7) as usize;
+    let pc_offset = sign_extend(instr & 0x1FF, 9);
+    let rpc = u16::from(Registers::R_PC) as usize;
+    reg[r0] = mem_read(*reg.get(rpc).unwrap() + pc_offset);
+    update_flags(r0 as u16, reg);
 }
 
 fn sign_extend(mut x: u16, bit_count : u16) -> u16{

@@ -119,6 +119,22 @@ fn op_load(instr : u16, mut reg: &mut Vec<u16>){
     update_flags(r0 as u16, reg);
 }
 
+
+// LDI load indirect
+fn op_load_indirect(instr : u16, mut reg: &mut Vec<u16>){
+    //Destination register (DR)
+
+    let r0 = ((instr >> 9) & 0x7) as usize;
+    // PC OFFSET 9
+
+    let pc_offset = sign_extend(instr & 0x1FF, 9);
+    /* add pc_offset to the current PC, look at that memory location to get the final address */
+    let rpc = u16::from(Registers::R_PC) as usize;
+    let value = *reg.get(rpc).unwrap() + pc_offset;
+    reg[r0] = mem_read(value);
+    update_flags(r0 as u16, reg);
+}
+
 fn sign_extend(mut x: u16, bit_count : u16) -> u16{
     let sign = x >> (bit_count - 1) & 1;
 

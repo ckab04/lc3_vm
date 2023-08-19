@@ -30,6 +30,7 @@ pub fn op_add(instr : u16, mut reg: &mut Vec<u16>){
 
 }
 
+// ADD
 fn op_and(instr : u16, mut reg: &mut Vec<u16>){
     // Destination Register (DR)
     let r0 = ((instr >> 9) & 0x7) as usize;
@@ -52,6 +53,7 @@ fn op_and(instr : u16, mut reg: &mut Vec<u16>){
     update_flags(r0 as u16, reg);
 }
 
+// NOT
 fn op_not(instr : u16, mut reg: &mut Vec<u16>){
    let r0 = ((instr >> 9) & 0x7) as usize;
     let r1 = ((instr >> 6) & 0x7) as usize;
@@ -59,6 +61,8 @@ fn op_not(instr : u16, mut reg: &mut Vec<u16>){
     update_flags(r0 as u16, reg);
 
 }
+
+// BRANCH INSTRUCTION
 
 fn op_branch(instr : u16, mut reg: &mut Vec<u16>){
 
@@ -73,6 +77,14 @@ fn op_branch(instr : u16, mut reg: &mut Vec<u16>){
         reg[rpc] = a;
     }
 
+}
+
+// JUMP
+fn op_jump(instr : u16, mut reg: &mut Vec<u16>){
+    // Also handles RET
+    let r1 = ((instr >> 6) & 0x7) as usize;
+    let rpc = u16::from(Registers::R_PC) as usize;
+    reg[rpc] = *reg.get(r1).unwrap();
 }
 
 fn sign_extend(mut x: u16, bit_count : u16) -> u16{

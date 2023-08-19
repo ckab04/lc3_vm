@@ -87,6 +87,27 @@ fn op_jump(instr : u16, mut reg: &mut Vec<u16>){
     reg[rpc] = *reg.get(r1).unwrap();
 }
 
+
+// JUMP REGISTER
+fn op_jump_register(instr : u16, mut reg: &mut Vec<u16>){
+
+    let long_flag = (instr >> 11) & 1;
+    let rr7 = u16::from(Registers::R_R7) as usize;
+    let rpc = u16::from(Registers::R_PC) as usize;
+    reg[rr7] = reg[rpc];
+
+    if long_flag > 0{
+
+        let long_pc_offset = sign_extend(instr & 0x7FF, 11);
+        let rpc_content = *reg.get(rpc).unwrap() + long_pc_offset; // JSR
+        reg[rpc] = rpc_content;
+    }
+    else{
+        let r1 = ((instr >> 6) & 0x7) as usize;
+        reg[rpc] = reg[r1]; // JSRR
+    }
+}
+
 fn sign_extend(mut x: u16, bit_count : u16) -> u16{
     let sign = x >> (bit_count - 1) & 1;
 

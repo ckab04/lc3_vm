@@ -60,6 +60,21 @@ fn op_not(instr : u16, mut reg: &mut Vec<u16>){
 
 }
 
+fn op_branch(instr : u16, mut reg: &mut Vec<u16>){
+
+    let pc_offset = sign_extend(instr & 0x1FF, 9);
+    let cond_flag = (instr >> 9) & 0x7;
+    let val_rcond = u16::from(Registers::R_COND);
+
+    if cond_flag &  reg.get(val_rcond as usize).unwrap()> 0{
+        let index = u16::from(Registers::R_PC);
+        let a = reg.get(index as usize).unwrap() + pc_offset;
+        let rpc = u16::from(Registers::R_PC) as usize;
+        reg[rpc] = a;
+    }
+
+}
+
 fn sign_extend(mut x: u16, bit_count : u16) -> u16{
     let sign = x >> (bit_count - 1) & 1;
 

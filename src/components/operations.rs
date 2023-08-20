@@ -168,7 +168,6 @@ pub fn store_indirect(instr : u16, mut reg: &mut Vec<u16>){
 }
 
 // Store register
-
 pub fn op_store_register(instr : u16, mut reg: &mut Vec<u16>){
     let r0 = ((instr >> 9) & 0x7) as usize;
     let r1 = ((instr >> 6) & 0x7) as usize;
@@ -177,6 +176,12 @@ pub fn op_store_register(instr : u16, mut reg: &mut Vec<u16>){
     let value_in_r1 = *reg.get(r1).unwrap();
     let value_in_r0 = *reg.get(r0).unwrap();
     mem_write(value_in_r1 + offset, value_in_r0);
+
+}
+
+// TRAP ROUTINES
+
+pub fn op_trap(instr : u16, mut reg: &mut Vec<u16>){
 
 }
 

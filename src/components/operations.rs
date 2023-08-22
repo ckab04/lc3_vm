@@ -5,6 +5,7 @@ use crate::components::registers::Registers;
 
 
 // ADD instruction
+#[allow(unused_parens)]
 pub fn op_add(instr : u16, mut reg: &mut Vec<u16>){
 
     // Destination Register (DR)
@@ -33,6 +34,7 @@ pub fn op_add(instr : u16, mut reg: &mut Vec<u16>){
 }
 
 // ADD
+#[allow(arithmetic_overflow)]
 pub fn op_and(instr : u16, mut reg: &mut Vec<u16>){
     // Destination Register (DR)
     let r0 = ((instr >> 9) & 0x7) as usize;
@@ -45,7 +47,8 @@ pub fn op_and(instr : u16, mut reg: &mut Vec<u16>){
     // whether we are in immediate mode
     let imm_flag = (instr >> 5) & 0x1;
     if imm_flag > 0{
-      let imm5 = sign_extend(instr >> 0x1F, 5);
+        let v = instr >> 0x1F;
+      let imm5 = sign_extend(v, 5);
         reg[r0] = reg[r1] & imm5;
     }
     else {
@@ -56,7 +59,7 @@ pub fn op_and(instr : u16, mut reg: &mut Vec<u16>){
 }
 
 // NOT
-fn op_not(instr : u16, mut reg: &mut Vec<u16>){
+pub(crate) fn op_not(instr : u16, mut reg: &mut Vec<u16>){
    let r0 = ((instr >> 9) & 0x7) as usize;
     let r1 = ((instr >> 6) & 0x7) as usize;
     reg[r0] = !reg[r1];
@@ -66,7 +69,7 @@ fn op_not(instr : u16, mut reg: &mut Vec<u16>){
 
 // BRANCH INSTRUCTION
 
-fn op_branch(instr : u16, mut reg: &mut Vec<u16>){
+pub (crate) fn op_branch(instr : u16, mut reg: &mut Vec<u16>){
 
     let pc_offset = sign_extend(instr & 0x1FF, 9);
     let cond_flag = (instr >> 9) & 0x7;
@@ -82,7 +85,7 @@ fn op_branch(instr : u16, mut reg: &mut Vec<u16>){
 }
 
 // JUMP
-fn op_jump(instr : u16, mut reg: &mut Vec<u16>){
+pub (crate) fn op_jump(instr : u16, mut reg: &mut Vec<u16>){
     // Also handles RET
     let r1 = ((instr >> 6) & 0x7) as usize;
     let rpc = u16::from(Registers::R_PC) as usize;
@@ -91,7 +94,7 @@ fn op_jump(instr : u16, mut reg: &mut Vec<u16>){
 
 
 // JUMP REGISTER
-fn op_jump_register(instr : u16, mut reg: &mut Vec<u16>){
+pub (crate) fn op_jump_register(instr : u16, mut reg: &mut Vec<u16>){
 
     let long_flag = (instr >> 11) & 1;
     let rr7 = u16::from(Registers::R_R7) as usize;
@@ -111,7 +114,7 @@ fn op_jump_register(instr : u16, mut reg: &mut Vec<u16>){
 }
 
 // LOAD
-fn op_load(instr : u16, mut reg: &mut Vec<u16>){
+pub (crate) fn op_load(instr : u16,  reg: &mut Vec<u16>){
 
     let r0 = ((instr >> 9) & 0x7) as usize;
     let pc_offset = sign_extend(instr & 0x1FF, 9);
@@ -122,7 +125,7 @@ fn op_load(instr : u16, mut reg: &mut Vec<u16>){
 
 
 // LDI load indirect
-fn op_load_indirect(instr : u16, mut reg: &mut Vec<u16>){
+pub (crate) fn op_load_indirect(instr : u16,  reg: &mut Vec<u16>){
     //Destination register (DR)
 
     let r0 = ((instr >> 9) & 0x7) as usize;
@@ -136,8 +139,18 @@ fn op_load_indirect(instr : u16, mut reg: &mut Vec<u16>){
     update_flags(r0 as u16, reg);
 }
 
+// Load Register LDR
+pub(crate)  fn op_load_register(instr : u16,  reg: &mut Vec<u16>){
+    let r0 = ((instr >> 9) & 0x7) as usize;
+    let r1 = ((instr >> 6) & 0x7) as usize;
+    let offset = sign_extend(instr & 0x3F, 6);
+    let val_r1 = *reg.get(r1).unwrap();
+    reg[r0] = mem_read(val_r1 + offset);
+    update_flags(r0 as u16, reg);
+}
+
 // Load effective address
-fn op_load_effective_address(instr : u16, mut reg: &mut Vec<u16>){
+pub (crate) fn op_load_effective_address(instr : u16,  reg: &mut Vec<u16>){
     let r0 = ((instr >> 9) & 0x7) as usize;
     let pc_offset = sign_extend(instr & 0x1FF, 9);
     let rpc = u16::from(Registers::R_PC) as usize;
@@ -149,7 +162,7 @@ fn op_load_effective_address(instr : u16, mut reg: &mut Vec<u16>){
 
 
 // Store
-fn op_store(instr : u16, mut reg: &mut Vec<u16>){
+pub (crate) fn op_store(instr : u16, reg: &mut Vec<u16>){
     let r0 = ((instr >> 9) & 0x7) as usize;
     let pc_offset = sign_extend(instr & 0x1FF, 9);
     let rpc = u16::from(Registers::R_PC) as usize;
@@ -160,7 +173,7 @@ fn op_store(instr : u16, mut reg: &mut Vec<u16>){
 
 // Store indirect
 
-pub fn store_indirect(instr : u16, mut reg: &mut Vec<u16>){
+pub (crate) fn op_store_indirect(instr : u16, reg: &mut Vec<u16>){
 
     let (r0, sum_rpc_pc_offset) = register_0_pc_offset(instr, reg);
     let value_in_r0 = *reg.get(r0 as usize).unwrap();
@@ -168,7 +181,7 @@ pub fn store_indirect(instr : u16, mut reg: &mut Vec<u16>){
 }
 
 // Store register
-pub fn op_store_register(instr : u16, mut reg: &mut Vec<u16>){
+pub (crate) fn op_store_register(instr : u16, reg: &mut Vec<u16>){
     let r0 = ((instr >> 9) & 0x7) as usize;
     let r1 = ((instr >> 6) & 0x7) as usize;
 
@@ -181,7 +194,7 @@ pub fn op_store_register(instr : u16, mut reg: &mut Vec<u16>){
 
 // TRAP ROUTINES
 
-pub fn op_trap(instr : u16, mut reg: &mut Vec<u16>){
+pub (crate) fn op_trap(instr : u16, reg: &mut Vec<u16>){
 
 }
 
@@ -195,7 +208,7 @@ pub (crate) fn sign_extend(mut x: u16, bit_count : u16) -> u16{
     x
 }
 
-pub (crate) fn update_flags(r : u16, mut reg: &mut Vec<u16>){
+pub (crate) fn update_flags(r : u16, reg: &mut Vec<u16>){
 
     let rcond = u16::from(Registers::R_COND) as usize;
     let cond_flag_zero =i16::from(ConditionFlags::FL_ZRO);

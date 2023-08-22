@@ -57,6 +57,8 @@ pub(crate) fn op_outc(reg: &Vec<u16>){
     put_char(reg);
 }
 
+
+// Prompt for input character
 pub fn op_in(mut reg: &mut Vec<u16>){
     println!("Enter a character : ");
     let char_c = get_char();
@@ -66,6 +68,46 @@ pub fn op_in(mut reg: &mut Vec<u16>){
     reg[rr0] = value_rr0;
     update_flags(rr0 as u16, reg);
 
+}
+
+pub(crate) fn op_puts(mut reg: &mut Vec<u16>){
+    let memory = 0u16;
+    let rr0 = u16::from(R_R0) as usize;
+    let val_rr0 = *reg.get(rr0).unwrap();
+    let mut c = memory + val_rr0;
+    while c > 0{
+        print!("{}", c);
+        c += 1;
+    }
+}
+
+
+// Output String
+pub fn op_putsp(reg: &mut Vec<u16>){
+    /* one char per byte (two bytes per word)
+        here we need to swap back to
+        big endian format */
+    let memory = 0x12u16;
+
+    let rr0 = u16::from(R_R0) as usize;
+    let value_rr0 = *reg.get(rr0).unwrap();
+    let c = memory + value_rr0;
+    while  c > 0{
+        let mut val = c & 0xFF;
+        let char1  = char::from_u32(val as u32).unwrap();
+        let val_char2 = c >> 8;
+        let char2 = char::from_u32(val_char2 as u32).unwrap();
+        if val_char2 > 0{
+            print!("{}", char2)
+        }
+
+        val += val + 1;
+    }
+}
+
+pub(crate)  fn op_halt(mut running : i32){
+    println!("{}", "HALT");
+    running = 0;
 }
 
 fn put_char(reg: &Vec<u16>){

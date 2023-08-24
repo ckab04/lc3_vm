@@ -4,7 +4,7 @@ use crate::components::instruction_set::Opcodes;
 use crate::components::operations::*;
 use crate::components::registers::{get_registers, Registers};
 use crate::components::registers::Registers::{R_PC, R_R7};
-use crate::components::trap_codes::{op_getc, op_halt, op_in, op_outc, op_puts, op_putsp};
+use crate::components::trap_codes::{op_getc, op_halt, op_in, op_outc, op_puts, op_putsp, TRAP_CODES};
 use crate::components::trap_codes::TRAP_CODES::{TRAP_GETC, TRAP_HALT, TRAP_IN, TRAP_OUT, TRAP_PUTS, TRAP_PUTSP};
 
 mod components;
@@ -77,6 +77,7 @@ fn run(){
 
         // Using if statement because match does not support function call
 
+
        if op == u16::from(Opcodes::OP_ADD){
              op_add(instr,  &mut reg);
         }
@@ -121,25 +122,17 @@ fn run(){
             let rpc = u16::from(R_PC) as usize;
             reg[rr7] = reg[rpc];
             let trap_code = instr & 0xFF;
+            let trap_c = TRAP_CODES::from(trap_code);
 
-            if trap_code == u16::from(TRAP_GETC){
-                op_getc(&mut reg);
+            match trap_c {
+                TRAP_GETC => { op_getc(&mut reg)},
+                TRAP_OUT => {  op_outc(&mut reg)},
+                TRAP_PUTS => { op_puts(&mut reg)},
+                TRAP_IN => { op_in(&mut reg)},
+                TRAP_PUTSP => { op_putsp(&mut reg)},
+                TRAP_HALT => { op_halt(running) }
             }
-            else if trap_code == u16::from(TRAP_OUT){
-                op_outc(&mut reg);
-            }
-            else if trap_code == u16::from(TRAP_PUTS){
-                op_puts(&mut reg);
-            }
-            else if trap_code == u16::from(TRAP_IN){
-                op_in(&mut reg);
-            }
-            else if trap_code == u16::from(TRAP_PUTSP){
-                op_putsp(&mut reg);
-            }
-            else if trap_code == u16::from(TRAP_HALT){
-                op_halt(running);
-            }
+
         }
 
     }

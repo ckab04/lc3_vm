@@ -6,7 +6,7 @@ use crate::components::registers::Registers;
 
 // ADD instruction
 #[allow(unused_parens)]
-pub fn op_add(instr : u16, mut reg: &mut Vec<u16>){
+pub fn op_add(instr : u16,  reg: &mut Vec<u16>){
 
     // Destination Register (DR)
     let r0 = ((instr >> 9) & 0x7);
@@ -35,7 +35,7 @@ pub fn op_add(instr : u16, mut reg: &mut Vec<u16>){
 
 // ADD
 #[allow(arithmetic_overflow)]
-pub fn op_and(instr : u16, mut reg: &mut Vec<u16>){
+pub fn op_and(instr : u16,  reg: &mut Vec<u16>){
     // Destination Register (DR)
     let r0 = ((instr >> 9) & 0x7) as usize;
     //let r0 = usize::try_from(r0).unwrap();
@@ -59,7 +59,7 @@ pub fn op_and(instr : u16, mut reg: &mut Vec<u16>){
 }
 
 // NOT
-pub(crate) fn op_not(instr : u16, mut reg: &mut Vec<u16>){
+pub(crate) fn op_not(instr : u16,  reg: &mut Vec<u16>){
    let r0 = ((instr >> 9) & 0x7) as usize;
     let r1 = ((instr >> 6) & 0x7) as usize;
     reg[r0] = !reg[r1];
@@ -69,7 +69,7 @@ pub(crate) fn op_not(instr : u16, mut reg: &mut Vec<u16>){
 
 // BRANCH INSTRUCTION
 
-pub (crate) fn op_branch(instr : u16, mut reg: &mut Vec<u16>){
+pub (crate) fn op_branch(instr : u16,  reg: &mut Vec<u16>){
 
     let pc_offset = sign_extend(instr & 0x1FF, 9);
     let cond_flag = (instr >> 9) & 0x7;
@@ -85,7 +85,7 @@ pub (crate) fn op_branch(instr : u16, mut reg: &mut Vec<u16>){
 }
 
 // JUMP
-pub (crate) fn op_jump(instr : u16, mut reg: &mut Vec<u16>){
+pub (crate) fn op_jump(instr : u16,  reg: &mut Vec<u16>){
     // Also handles RET
     let r1 = ((instr >> 6) & 0x7) as usize;
     let rpc = u16::from(Registers::R_PC) as usize;
@@ -94,7 +94,7 @@ pub (crate) fn op_jump(instr : u16, mut reg: &mut Vec<u16>){
 
 
 // JUMP REGISTER
-pub (crate) fn op_jump_register(instr : u16, mut reg: &mut Vec<u16>){
+pub (crate) fn op_jump_register(instr : u16,  reg: &mut Vec<u16>){
 
     let long_flag = (instr >> 11) & 1;
     let rr7 = u16::from(Registers::R_R7) as usize;
@@ -194,9 +194,11 @@ pub (crate) fn op_store_register(instr : u16, reg: &mut Vec<u16>){
 
 // TRAP ROUTINES
 
-pub (crate) fn op_trap(instr : u16, reg: &mut Vec<u16>){
+// pub (crate) fn op_trap(instr : u16, reg: &mut Vec<u16>){
+//
+// }
 
-}
+// TRAPS
 
 pub (crate) fn sign_extend(mut x: u16, bit_count : u16) -> u16{
     let sign = x >> (bit_count - 1) & 1;

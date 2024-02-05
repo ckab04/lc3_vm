@@ -1,3 +1,4 @@
+use crate::hardware::OPCODE::*;
 use crate::hardware::Registers::*;
 
 #[repr(C)]
@@ -49,7 +50,7 @@ impl From<u16> for Registers{
             8 => RPC,
             9 => RCOND,
             10 => RCOUNT,
-            _ => RCOUNT,
+            _ => unimplemented!(),
 
         }
 
@@ -97,5 +98,30 @@ impl From<OPCODE> for u16{
            OpLea=>   14, /* load effective address */
            OpTrap=>  15,  /* execute trap */
        }
+    }
+}
+
+impl From<u16> for OPCODE{
+    fn from(value: u16) -> Self {
+        match value{
+            0 => OpBr,
+            1 => OpAdd,
+            2 => OpLd,
+            3 => OpSt,
+            4 => OpJsr,
+            5 => OpAnd,
+            6 => OpLdr,
+            7 => OpStr,
+            8 => OpRti,
+            9 => OpNot,
+            10 => OpLdi,
+            11 => OpSti,
+            12 => OpJmp,
+            13 => OpRes,
+            14 => OpLea,
+            15 => OpTrap,
+            _ => unimplemented!(),
+        }
+
     }
 }

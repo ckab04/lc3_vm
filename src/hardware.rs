@@ -1,3 +1,4 @@
+use crate::hardware::Flags::{FlNeg, FlPos, FlZro};
 use crate::hardware::OPCODE::*;
 use crate::hardware::Registers::*;
 
@@ -145,7 +146,15 @@ impl From<Flags> for u16{
 }
 
 impl From<u16> for Flags{
+
     fn from(value: u16) -> Self {
-        todo!()
+        let pos = 1 << 0u16;
+        let zero = 1 << 1u16;
+        let neg = 1 << 2u16;
+        match value {
+            pos => FlPos,
+            zero => FlZro,
+            neg => FlNeg,
+        }
     }
 }

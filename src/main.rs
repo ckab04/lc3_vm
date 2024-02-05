@@ -2,6 +2,7 @@ use crate::hardware::Registers;
 use crate::hardware::Registers::*;
 
 mod hardware;
+mod instructions;
 
 const MEMORY_MAX: u32 = 1 << 16;
 const NUM_REGISTERS: u16 = RCOUNT as u16;

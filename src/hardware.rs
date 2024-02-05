@@ -125,3 +125,27 @@ impl From<u16> for OPCODE{
 
     }
 }
+
+
+// condition flags
+pub enum Flags{
+    FlPos,
+    FlZro,
+    FlNeg
+}
+
+impl From<Flags> for u16{
+    fn from(value: Flags) -> Self {
+        match value {
+            Flags::FlPos => 1 << 0,
+            Flags::FlZro => 1 << 1,
+            Flags::FlNeg => 1 << 2,
+        }
+    }
+}
+
+impl From<u16> for Flags{
+    fn from(value: u16) -> Self {
+        todo!()
+    }
+}

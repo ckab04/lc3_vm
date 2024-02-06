@@ -19,7 +19,7 @@ pub enum Registers{
 }
 
 impl From<Registers> for u16{
-    fn from(value: Registers) -> Self {
+    fn from(value: Registers) -> u16 {
        match value{
            RR0 => 0,
            RR1=> 1,

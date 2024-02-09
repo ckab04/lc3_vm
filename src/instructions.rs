@@ -85,7 +85,7 @@ pub fn jump_register(instr: u16, reg: &mut [u16; NUM_REGISTERS as usize]){
         reg[rpc] += long_pc_offset; // JSR
     }else{
         let r1 = (instr >> 6) & 0x7;
-        reg[rpc] = reg[r1];
+        reg[rpc] = reg[r1 as usize];
     }
 }
 
@@ -104,9 +104,51 @@ fn mem_read(p0: u16) -> u16 {
 }
 
 
+pub fn load_register(instr: u16, reg: &mut [u16; NUM_REGISTERS as usize]){
+
+    let r0 = (instr >> 9) & 0x7;
+    let r1 = (instr >> 6) & 0x7;
+    let offset = sign_extend(instr & 0x3F, 6);
+    reg[r0 as usize] = mem_read(reg[r1 as usize] + offset);
+    update_flags(r0);
+}
+
+pub fn load_effective_address(instr: u16, reg: &mut [u16; NUM_REGISTERS as usize]){
+    let r0 = (instr >> 9) & 0x7;
+    let pc_offset = sign_extend(instr & 0x1FF, 9);
+    let rpc = Registers::from(RPC) as usize;
+    reg[r0 as usize] = reg[rpc] + pc_offset;
+    update_flags(r0);
+}
+
+pub fn store(instr: u16, reg: &mut [u16; NUM_REGISTERS as usize]){
+    let r0 = (instr >> 9) & 0x7;
+    let pc_offset = sign_extend(instr & 0x1FF, 9);
+    let rpc = Registers::from(RPC) as usize;
+    mem_write(reg[rpc] + pc_offset, reg[r0 as usize]);
+}
+
+fn mem_write(p0: u16, p1: u16) {
+    todo!()
+}
 
 
+pub fn store_indirect(instr: u16, reg: &mut [u16; NUM_REGISTERS as usize]){
+// TODO: duplicate code same as in load_register
+    let r0 = (instr >> 9) & 0x7;
+   // let r1 = (instr >> 6) & 0x7;
+    let rpc = Registers::from(RPC) as usize;
+    let offset = sign_extend(instr & 0x3F, 6);
+    mem_write(mem_read(reg[rpc] + offset), reg[r0 as usize]);
+}
 
+pub fn store_register(instr: u16, reg: &mut [u16; NUM_REGISTERS as usize]){
+    // TODO: duplicate code same as in load_register
+    let r0 = (instr >> 9) & 0x7;
+    let r1 = (instr >> 6) & 0x7;
+    let offset = sign_extend(instr & 0x3F, 6);
+    mem_write(reg[r1 as usize] + offset, reg[r0 as usize]);
+}
 
 
 

@@ -74,3 +74,53 @@ pub fn jump_instr(instr: u16, reg: &mut [u16; NUM_REGISTERS as usize]){
     let rpc_val = Registers::from(RPC) as usize;
     reg[rpc_val] = reg[r1 as usize];
 }
+
+pub fn jump_register(instr: u16, reg: &mut [u16; NUM_REGISTERS as usize]){
+    let long_flag = (instr >> 11);
+    let rr7 = Registers::from(RR7) as usize;
+    let rpc = Registers::from(RPC) as usize;
+    reg[rr7] = reg[rpc];
+    if long_flag == 1{
+        let long_pc_offset = sign_extend(instr & 0x7FF, 11);
+        reg[rpc] += long_pc_offset; // JSR
+    }else{
+        let r1 = (instr >> 6) & 0x7;
+        reg[rpc] = reg[r1];
+    }
+}
+
+
+
+pub fn load(instr: u16, reg: &mut [u16; NUM_REGISTERS as usize]){
+    let r0 = (instr >> 9) & 0x7;
+    let pc_offset = sign_extend(instr & 0x1FF, 9);
+    let rpc = Registers::from(RPC) as usize;
+    reg[r0 as usize] = mem_read(reg[rpc] + pc_offset);
+    update_flags(r0);
+}
+
+fn mem_read(p0: u16) -> u16 {
+    todo!()
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

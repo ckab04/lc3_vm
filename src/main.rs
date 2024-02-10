@@ -3,6 +3,7 @@ use crate::hardware::Registers::*;
 
 mod hardware;
 mod instructions;
+mod trap_codes;
 
 const MEMORY_MAX: u32 = 1 << 16;
 const NUM_REGISTERS: u16 = RCOUNT as u16;
@@ -14,6 +15,7 @@ fn main() {
     //let LENGTH_REGISTER_STORAGE: usize = register_storage as usize;
     let registers: [u16; NUM_REGISTERS as usize] = [0; NUM_REGISTERS as usize];
     println!("Hello rust");
+    println!("#{:06x}", trap_codes::TRAP::TrapGet as i32);
 }
 
 

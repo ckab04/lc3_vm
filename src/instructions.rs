@@ -25,7 +25,7 @@ pub fn add(instr: u16, reg: &mut [u16; NUM_REGISTERS as usize]){
     update_flags(r0.try_into().unwrap());
 }
 
-fn update_flags(p0: u16) {
+pub fn update_flags(p0: u16) {
     todo!()
 }
 

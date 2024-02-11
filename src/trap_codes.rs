@@ -3,7 +3,7 @@ use std::io::Write;
 use crate::hardware::Registers;
 use crate::hardware::Registers::{RPC, RR0, RR7};
 use crate::instructions::update_flags;
-use crate::NUM_REGISTERS;
+use crate::{MEMORY_MAX, NUM_REGISTERS};
 use crate::trap_codes::TRAP::{TrapHalt, TrapIn, TrapOut, TrapPuts, TrapPutsp};
 
 #[derive(Debug)]
@@ -52,18 +52,76 @@ fn trap_getc(reg: &mut [u16; NUM_REGISTERS as usize]){
         .map(|result| result as u16).unwrap();
 
     let rr0 = Registers::from(RR0) as u16;
-    reg[rr0] = first_char;
+    reg[rr0 as usize ] = first_char;
     update_flags(rr0);
 }
 
 fn trap_out_f(reg: &mut [u16; NUM_REGISTERS as usize]){
    let rr0 = Registers::from(RR0) as u16;
-    let reg_rr0 = reg[rr0];
+    let reg_rr0 = reg[rr0 as usize] as u8;
     let rr0_char = char::from(reg_rr0);
     print!("{}", rr0_char);
     io::stdout().flush().unwrap();
 }
 
 fn trap_in_f(reg: &mut [u16; NUM_REGISTERS as usize]){
+    print!("Enter a character: ");
+    let mut input = String::new();
+    let _value = io::stdin().read_line(&mut input).ok().expect("Failed to read line");
+    let first_char = input.bytes()
+        .nth(0)
+        .map(|result| result as u16).unwrap() ;
+    let rr0 = Registers::from(RR0) as usize;
+    reg[rr0] = first_char;
 
 }
+
+fn trap_puts_p(reg: &mut [u16; NUM_REGISTERS as usize], memory: &mut [u16; MEMORY_MAX as usize]){
+    let rr0 = Registers::from(RR0) as u16;
+    let first_value_memory = memory[0];
+    let mut c = first_value_memory + rr0;
+
+    while(c > 1){
+        let val_c = c & 0xFF;
+        let char1 = char::from_u32(val_c as u32).unwrap() ;
+        print!("{}", char1);
+        let v = c >> 8;
+        if v == 1 {
+            print!("{}", char::from_u32(v as u32).unwrap());
+        }
+        c += 1;
+    }
+
+    io::stdout().flush().unwrap();
+}
+
+pub fn  trap_halt(mut running: u32){
+    println!("HALT");
+    running = 0;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

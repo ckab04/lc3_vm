@@ -22,20 +22,28 @@ fn main() {
 }
 
 
-fn read_image_file(file_path: PathBuf, memory: u32){
+fn read_image_file(file : File, memory: u32){
 
     let mut content = String::new();
-    let mut file = File::open(file_path).unwrap();
-    let origin = file.read_to_string(&mut content).unwrap();
+    //let mut file = File::open(&file_path).unwrap();
+    let f_read = file.clone();
+    let origin = f_read.read(&mut content).unwrap();
 
     let origin = swap16(origin as u16);
     /* we know the maximum file size so we only need one fread */
 
-    let max_read = MEMORY_MAX - origin;
-    let p = memory + origin;
+    let max_read = MEMORY_MAX - origin as u32;
+    let mut p = (memory + origin as u32) as u16;
     //let file = File::open(file_path);
-    let buffer = String::new();
-    //let read_size = File::read_to_string();
+
+    //let mut file =  File::open(&file_path).unwrap();
+    let mut file =  file.clone();
+    let mut buffer = String::new();
+    let mut read_size = file.read_to_string(&mut buffer).unwrap();
+    while read_size > 0 {
+        p = swap16(p);
+        p +=1;
+    }
 
 
 }
@@ -44,6 +52,9 @@ fn swap16(x: u16)-> u16{
     (x << 8 ) | (x >> 8)
 }
 
-
+fn read_image(image_length: &PathBuf){
+    let  _file = File::open(&image_length).unwrap();
+    //read_image_file()
+}
 
 
